@@ -44,7 +44,29 @@
         ((null line) hsps)
       (if (> lineno 5)
 	  (push (parse-line line) hsps)))))
-	  
+(defparameter field-names '(	  
+matches ; Number of bases that match that aren't repeats
+misMatches ; Number of bases that don't match
+repMatches ; Number of bases that match but are part of repeats
+nCount ; Number of 'N' bases
+qNumInsert ; Number of inserts in query
+qBaseInsert ; Number of bases inserted in query
+tNumInsert ; Number of inserts in target
+tBaseInsert ; Number of bases inserted in target
+strand ; '+' or '-' for query strand. For translated alignments, second '+'or '-' is for genomic strand
+qName ; Query sequence name
+qSize ; Query sequence size
+qStart ; Alignment start position in query
+qEnd ; Alignment end position in query
+tName ; Target sequence name
+tSize ; Target sequence size
+tStart ; Alignment start position in target
+tEnd ; Alignment end position in target
+blockCount ; Number of blocks in the alignment (a block contains no gaps)
+blockSizes ; Comma-separated list of sizes of each block
+qStarts ; Comma-separated list of starting positions of each block in query
+tStarts)) ; Comma-separated list of starting positions of each block in target
+
 
 (defun parse-line (line)
   (let ((fields (split-sequence:split-sequence #\tab line)))
@@ -52,7 +74,7 @@
       (setf (nth field-num fields) (mapcar #'(lambda (s) (parse-integer s)) (remove "" (split-sequence:split-sequence #\, (nth field-num fields)) :test #'equal))))
     (do ((i 0 (incf i))
 	 (lst fields (setf lst (cdr lst))))
-	( (null lst) fields)
+	( (null lst) (mapcar #'cons field-names fields))
       (if (not (member i '(8 9 13 18 19 20))) 
 	  (setf (car lst) (parse-integer (car lst)))))))
 
